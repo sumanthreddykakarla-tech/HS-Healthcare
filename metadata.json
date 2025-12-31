@@ -1,0 +1,9 @@
+{
+  "name": "HS Healthcare Ecosystem",
+  "description": "A comprehensive medical platform featuring hospital exploration, daily treatment tracking, diagnostic booking, and a global blood connect broadcast system.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
