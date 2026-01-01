@@ -1,5 +1,5 @@
-# 1. Use the [BASE IMAGE] (e.g., node:20-slim or python:3.11-slim)
-FROM [BASE IMAGE]
+# 1. Simple version
+FROM node:18-alpine
 
 # 2. Set the working directory inside the container
 WORKDIR /app
