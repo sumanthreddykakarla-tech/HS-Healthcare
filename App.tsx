@@ -295,14 +295,23 @@ const ParticleBackground: React.FC<{ isPaid?: boolean }> = ({ isPaid }) => {
 // --- Shared Components ---
 
 const Navbar: React.FC<{ user: User | null }> = ({ user }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
+
+  const navLinks = [
+    { path: '/hospitals', label: 'Network' },
+    { path: '/blood-connect', label: 'Blood' },
+    { path: '/diagnostics', label: 'Labs' },
+    { path: '/treatment', label: 'Treatment' },
+    { path: '/profile', label: 'Customer Profiles' },
+  ];
 
   return (
     <header className="sticky top-0 z-50">
       <div className="w-full glass border-b border-white/5 py-3 px-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
+          <Link to="/" className="flex items-center gap-3 group" onClick={() => setIsMobileMenuOpen(false)}>
             <div className="w-8 h-8 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg flex items-center justify-center text-white font-black text-lg transition-transform group-hover:scale-110">
               HS
             </div>
@@ -311,14 +320,9 @@ const Navbar: React.FC<{ user: User | null }> = ({ user }) => {
             </span>
           </Link>
 
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            {[
-              { path: '/hospitals', label: 'Network' },
-              { path: '/blood-connect', label: 'Blood' },
-              { path: '/diagnostics', label: 'Labs' },
-              { path: '/treatment', label: 'Treatment' },
-              { path: '/profile', label: 'Customer Profiles' },
-            ].map(link => (
+            {navLinks.map(link => (
               <Link 
                 key={link.path}
                 to={link.path} 
@@ -334,15 +338,56 @@ const Navbar: React.FC<{ user: User | null }> = ({ user }) => {
           <div className="flex items-center gap-4">
             {user && (
               <div className="flex items-center gap-3">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden sm:block">{user.name}</span>
+                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest hidden lg:block">{user.name}</span>
                 <div className="w-8 h-8 bg-cyan-400/10 border border-cyan-400/20 rounded-full flex items-center justify-center text-cyan-400 text-[10px] font-black">
                   {user.name[0]}
                 </div>
               </div>
             )}
+            
+            {/* Hamburger Button */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden w-10 h-10 flex items-center justify-center text-white bg-white/5 rounded-xl border border-white/10 active:scale-90 transition-transform"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16m-7 6h7" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-black/98 backdrop-blur-3xl animate-in fade-in slide-in-from-top-4 duration-300">
+           <div className="flex flex-col items-center justify-center h-full gap-8 p-12">
+              <div className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-4">Neural Navigation Nodes</div>
+              {navLinks.map(link => (
+                <Link 
+                  key={link.path}
+                  to={link.path} 
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`text-2xl font-black uppercase tracking-[0.2em] transition-all py-4 w-full text-center border-b border-white/5 ${
+                    isActive(link.path) ? 'text-cyan-400' : 'text-white/40 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="mt-12 px-8 py-4 bg-white/5 border border-white/10 text-slate-500 font-black text-[10px] uppercase tracking-[0.3em] rounded-2xl active:bg-white active:text-black transition-all"
+              >
+                Abort Sync
+              </button>
+           </div>
+        </div>
+      )}
     </header>
   );
 };
@@ -425,7 +470,7 @@ const DiagnosticsLab: React.FC = () => {
        {bookingTest && (
          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
             <div className="absolute inset-0 bg-black/85 backdrop-blur-md" onClick={closeModal}></div>
-            <div className="glass p-10 md:p-14 rounded-[3.5rem] border-white/15 shadow-[0_0_120px_rgba(34,211,238,0.2)] max-w-lg w-full scale-in relative z-10 overflow-hidden">
+            <div className="glass p-10 md:p-14 rounded-[3.5rem] border-white/15 shadow-[0_0_120px_rgba(34,211,238,0.25)] max-w-lg w-full scale-in relative z-10 overflow-hidden">
                {bookingStatus === 'confirming' || bookingStatus === 'processing' ? (
                  <>
                    <div className="flex items-center gap-5 mb-10">
@@ -453,7 +498,7 @@ const DiagnosticsLab: React.FC = () => {
 
                       <div className="flex gap-4">
                          <div className="flex-1 p-6 bg-white/5 rounded-3xl border border-white/5">
-                            <p className="text-slate-500 text-[8px] font-black uppercase tracking-widest mb-2">Cost</p>
+                            <p className="text-slate-500 text-[8px] font-black uppercase tracking-[0.2em] mb-2">Cost</p>
                             <p className="text-white font-black text-2xl tracking-tight">₹{bookingTest.price}</p>
                          </div>
                          <div className="flex-1 p-6 bg-cyan-400/10 rounded-3xl border border-cyan-400/20">
@@ -890,7 +935,7 @@ const TreatmentFlow: React.FC<{
                 <div key={consult.id} className="glass p-8 rounded-[2rem] border border-white/5 group hover:border-cyan-400/20 transition-all">
                   <div className="flex justify-between items-start mb-4">
                     <span className="text-cyan-400 font-black text-[9px] uppercase tracking-widest">{consult.date}</span>
-                    <span className="px-2 py-1 bg-white/5 rounded-lg text-[8px] font-black text-slate-500 uppercase">{consult.specialty}</span>
+                    <span className="px-2 py-1 bg-white/5 rounded-lg text-[8px] font-black uppercase tracking-widest text-slate-500 uppercase">{consult.specialty}</span>
                   </div>
                   <h5 className="text-xl font-black text-white mb-1 group-hover:text-cyan-400 transition-colors">{consult.doctorName}</h5>
                   <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest mb-4">{consult.hospitalName}</p>
@@ -976,7 +1021,6 @@ const TreatmentFlow: React.FC<{
 const HospitalExplorer: React.FC = () => {
   const navigate = useNavigate();
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('All');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSpecialtyOpen, setIsSpecialtyOpen] = useState(false);
   const [specialtySearch, setSpecialtySearch] = useState('');
   
@@ -997,10 +1041,7 @@ const HospitalExplorer: React.FC = () => {
     const matchesDoctorSpecialty = selectedSpecialty === 'All' || 
                                    h.doctors.some(d => d.specialty === selectedSpecialty);
                                    
-    const matchesSearch = h.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          h.address.toLowerCase().includes(searchQuery.toLowerCase());
-                          
-    return matchesDoctorSpecialty && matchesSearch;
+    return matchesDoctorSpecialty;
   });
 
   const filteredSpecialtiesList = allDoctorSpecialties.filter(s => 
@@ -1013,16 +1054,6 @@ const HospitalExplorer: React.FC = () => {
         <div className="lg:col-span-3">
           <h2 className="text-5xl md:text-6xl font-black text-white mb-6 tracking-tighter leading-none">Select<br/>Medical<br/>Node</h2>
           <p className="text-slate-500 font-medium mb-10 text-sm leading-relaxed max-w-[200px]">Explore global nodes with specialized clinical synchronization.</p>
-          
-          <div className="relative group max-w-[140px]">
-            <input 
-              type="text" 
-              placeholder="Search" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-6 py-4 glass border-white/10 rounded-2xl text-white outline-none focus:border-cyan-500/40 transition-all placeholder-slate-600 font-black text-[10px] uppercase tracking-[0.2em] text-center"
-            />
-          </div>
         </div>
 
         <div className="lg:col-span-2 flex items-center justify-center pt-8 lg:pt-20">
