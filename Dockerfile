@@ -14,11 +14,11 @@ COPY . .
 # Accept the API Key as a build argument
 ARG GEMINI_API_KEY
 
-# Create the .env.local file with the key inside
+
 # Note: Vite requires variables to start with VITE_ to be visible in the browser
 RUN echo "VITE_GEMINI_API_KEY=$GEMINI_API_KEY" > .env.local
 
-# Build the app (creates the 'dist' folder)
+# Build the app 
 RUN npm run build
 
 # --- Stage 2: Serve with Nginx ---
